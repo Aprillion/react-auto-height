@@ -3,9 +3,6 @@
   "version": "0.1.0",
   "description": "Automagical transition of `height: auto` elements when their content is changed.",
   "main": "build/index.js",
-  "directories": {
-    "doc": "doc"
-  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "webpack --watch",
