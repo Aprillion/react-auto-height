@@ -5,8 +5,8 @@
   "main": "build/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "webpack --watch",
-    "build": "webpack"
+    "start": "start-storybook",
+    "build": "webpack && build-storybook -c .storybook -o docs"
   },
   "repository": {
     "type": "git",
@@ -22,6 +22,8 @@
     "@babel/core": "7.5.0",
     "@babel/preset-env": "7.5.0",
     "@babel/preset-react": "7.0.0",
+    "@storybook/addon-info": "5.1.9",
+    "@storybook/react": "5.1.9",
     "babel-loader": "8.0.6",
     "prettier": "1.18.2",
     "react": "16.8.6",
