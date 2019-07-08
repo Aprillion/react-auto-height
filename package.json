@@ -5,8 +5,8 @@
   "main": "build/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "start-storybook",
-    "build": "webpack && build-storybook -c .storybook -o docs"
+    "start": "start-storybook -s src/assets",
+    "build": "webpack && build-storybook -c .storybook -o docs -s src/assets"
   },
   "repository": {
     "type": "git",
