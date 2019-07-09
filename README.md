@@ -7,8 +7,6 @@ width and height, see W3C issue [csswg-drafts#626](https://github.com/w3c/csswg-
 This component implements a workaround inspired by the JavaScript technique from [CSS-Tricks](https://css-tricks.com/using-css-transitions-auto-dimensions/#article-header-id-5).
 
 ### Installation
-> Warning: NOT PUBLISHED YET
-
 ```bash
 npm i react-auto-height
 # or

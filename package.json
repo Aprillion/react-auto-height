@@ -4,7 +4,7 @@
   "description": "Automagical transition of `height: auto` elements when their content is changed.",
   "main": "build/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "webpack --watch  # Tested in external project using npm link",
     "start": "start-storybook -s src/assets",
     "build": "webpack && build-storybook -c .storybook -o docs -s src/assets"
   },

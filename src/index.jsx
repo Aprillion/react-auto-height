@@ -2,11 +2,10 @@ import React, {useState, useEffect, useRef} from 'react'
 import PropTypes from 'prop-types'
 
 const outerStyle = {
-  overflowY: 'hidden', // hide scroll bar
+  display: 'flex', // include margins from the children
+  flexDirection: 'column', // recalculate height when content is smaller
+  overflow: 'hidden', // hide scroll bar
   transition: 'height 300ms cubic-bezier(0.4, 0, 0.2, 1)', // same as Material UI 'MuiCollapse-container'
-}
-const innerStyle = {
-  overflowY: 'auto', // include margin of children
 }
 
 const AutoHeight = ({children, style, ...props}) => {
@@ -39,9 +38,10 @@ const AutoHeight = ({children, style, ...props}) => {
     style = outerStyle
   }
 
+  // inner div used in el.firstChild
   return (
     <div {...{ref, style, ...props}}>
-      <div style={innerStyle}>{children}</div>
+      <div>{children}</div>
     </div>
   )
 }
