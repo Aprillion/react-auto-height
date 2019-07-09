@@ -17,7 +17,20 @@ const AutoHeight = ({children, style, ...props}) => {
     if (!el) {
       return
     }
-    el.style.height = el.firstChild.scrollHeight + 'px'
+
+    const updateHeight = () => {
+      el.style.height = el.firstChild.scrollHeight + 'px'
+    }
+    updateHeight()
+
+    // workaround for nested AutoHeight elements
+    const checkHeight = () => {
+      el.removeEventListener('transitionend', checkHeight)
+      if (el.clientHeight !== el.firstChild.scrollHeight) {
+        updateHeight()
+      }
+    }
+    el.addEventListener('transitionend', checkHeight)
   })
 
   if (style) {
@@ -28,9 +41,7 @@ const AutoHeight = ({children, style, ...props}) => {
 
   return (
     <div {...{ref, style, ...props}}>
-      <div style={innerStyle}>
-        {children}
-      </div>
+      <div style={innerStyle}>{children}</div>
     </div>
   )
 }

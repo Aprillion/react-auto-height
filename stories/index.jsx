@@ -36,7 +36,7 @@ storiesOf('AutoHeight', module)
     }
     const style = {
       background,
-      transition: '300ms /* overwriting default transition for height */',
+      transition: '300ms /* overwriting transition for height */',
       whiteSpace: 'pre',
       cursor: 'pointer',
     }
@@ -59,15 +59,15 @@ storiesOf('AutoHeight', module)
     return (
       <div onClick={handleClick}>
         <p>
-          default paragraph <i>(click to change content)</i>
+          paragraph <i>(click to change content)</i>
         </p>
-        <p>default paragraph</p>
+        <p>paragraph</p>
         <p>
           <AutoHeight>
-            Correct AutoHeight, inside margin-significant element{extra}
+            Good-enough AutoHeight, inside margin-significant element{extra}
           </AutoHeight>
         </p>
-        <p>default paragraph</p>
+        <p>paragraph</p>
         <AutoHeight>
           <p>
             Incorrect AutoHeight, preventing{' '}
@@ -77,40 +77,62 @@ storiesOf('AutoHeight', module)
             {extra}
           </p>
         </AutoHeight>
-        <p>default paragraph</p>
+        <p>paragraph</p>
       </div>
     )
   })
-  .add('Nested', () => {
+  .add('Nested AutoHeights', () => {
     const [isShort, setIsShort] = useState(true)
     const handleClick = () => setIsShort(prev => !prev)
-    const extra = isShort ? null : (
-      <>
-        <p> ... extra paragraph 1</p>
-        <p> ... extra paragraph 2</p>
-      </>
-    )
+    const extra = isShort ? null : <pre>{' ... extra\n ... extra'}</pre>
     return (
-      <AutoHeight onClick={handleClick}>
-        click to change content
-        <AutoHeight>nested 1{extra}</AutoHeight>
-        <AutoHeight>nested 2{extra}</AutoHeight>
-        <AutoHeight>nested 3{extra}</AutoHeight>
-        end
-      </AutoHeight>
+      <div onClick={handleClick}>
+        <i>(click to change content)</i>
+        <div style={{display: 'flex', alignItems: 'flex-start'}}>
+          <AutoHeight style={{background: 'orange', minWidth: 150}}>
+            nested:
+            <AutoHeight>1{extra}</AutoHeight>
+            <AutoHeight>2{extra}</AutoHeight>
+            <AutoHeight>3{extra}</AutoHeight>✗
+          </AutoHeight>
+          <AutoHeight style={{background: 'gold', minWidth: 150}}>
+            outer only:
+            <div>1{extra}</div>
+            <div>2{extra}</div>
+            <div>3{extra}</div>
+            ¯\_(ツ)_/¯
+          </AutoHeight>
+          <div style={{background: 'yellowgreen', minWidth: 150}}>
+            inner only:
+            <AutoHeight>1{extra}</AutoHeight>
+            <AutoHeight>2{extra}</AutoHeight>
+            <AutoHeight>3{extra}</AutoHeight>✓
+          </div>
+        </div>
+        <p>
+          Nested AutoHeight components will take longer to animate, +100%
+          for each level because an outer layer has to wait until inner layers
+          reach their final height.
+        </p>
+      </div>
     )
   })
-  .add('Textarea (without AutoHeight)', () => {
+  .add('Without AutoHeight', () => {
     const handleAutoResize = ev => {
       ev.currentTarget.style.height = ev.currentTarget.scrollHeight + 'px'
     }
     return (
       <div>
-        <p>Do NOT combine AutoHeight with other auto-resizing solutions!</p>
+        Please do NOT combine AutoHeight with other auto-resizing solutions,
+        e.g. a dynamic textarea:
+        <br />
         <textarea
           onKeyDown={handleAutoResize}
           placeholder="I will expand for longer text"
         />
+        <AutoHeight>
+          <textarea onKeyDown={handleAutoResize} placeholder="I will too, but AutoHeight will not detect it" />
+        </AutoHeight>
       </div>
     )
   })
