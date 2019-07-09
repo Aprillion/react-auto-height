@@ -46,16 +46,71 @@ storiesOf('AutoHeight', module)
       </AutoHeight>
     )
   })
-  // TODO: more examples
-  .add('Recursive', () => {
+  .add('Margin collapsing', () => {
+    const [isShort, setIsShort] = useState(true)
+    const handleClick = () => setIsShort(prev => !prev)
+    const extra = isShort ? null : (
+      <>
+        <p> ... extra paragraph 1</p>
+        <p> ... extra paragraph 2</p>
+      </>
+    )
+
     return (
-      <AutoHeight>
-        blah blah
-        <AutoHeight>nested 1</AutoHeight>
-        <AutoHeight>nested 2</AutoHeight>
-        <AutoHeight>nested 3</AutoHeight>
-        TODO: add event handlers to show how nested AutoHeight interplay with a
-        parent
+      <div onClick={handleClick}>
+        <p>
+          default paragraph <i>(click to change content)</i>
+        </p>
+        <p>default paragraph</p>
+        <p>
+          <AutoHeight>
+            Correct AutoHeight, inside margin-significant element{extra}
+          </AutoHeight>
+        </p>
+        <p>default paragraph</p>
+        <AutoHeight>
+          <p>
+            Incorrect AutoHeight, preventing{' '}
+            <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Box_Model/Mastering_margin_collapsing">
+              margin collapse
+            </a>
+            {extra}
+          </p>
+        </AutoHeight>
+        <p>default paragraph</p>
+      </div>
+    )
+  })
+  .add('Nested', () => {
+    const [isShort, setIsShort] = useState(true)
+    const handleClick = () => setIsShort(prev => !prev)
+    const extra = isShort ? null : (
+      <>
+        <p> ... extra paragraph 1</p>
+        <p> ... extra paragraph 2</p>
+      </>
+    )
+    return (
+      <AutoHeight onClick={handleClick}>
+        click to change content
+        <AutoHeight>nested 1{extra}</AutoHeight>
+        <AutoHeight>nested 2{extra}</AutoHeight>
+        <AutoHeight>nested 3{extra}</AutoHeight>
+        end
       </AutoHeight>
+    )
+  })
+  .add('Textarea (without AutoHeight)', () => {
+    const handleAutoResize = ev => {
+      ev.currentTarget.style.height = ev.currentTarget.scrollHeight + 'px'
+    }
+    return (
+      <div>
+        <p>Do NOT combine AutoHeight with other auto-resizing solutions!</p>
+        <textarea
+          onKeyDown={handleAutoResize}
+          placeholder="I will expand for longer text"
+        />
+      </div>
     )
   })
