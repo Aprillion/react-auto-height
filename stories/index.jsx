@@ -23,20 +23,27 @@ storiesOf('AutoHeight', module)
     },
   })
   .add('Dynamic content', () => {
-    const [isShort, setIsShort] = useState(true)
-    const content = isShort ? (
-      'Short content - click to make longer'
-    ) : (
-      <div style={{whiteSpace: 'pre'}}>
-        {
-          'Long content\n. (animation not implemented yet, TDD in progress)\n.\n.\n.\n.\n...all the way here - click to make shorter'
-        }
-      </div>
-    )
+    const msg = 'click to change content'
+    const [content, setContent] = useState(msg)
+    const [background, setBackground] = useState('orange')
+    const handleClick = () => {
+      const rndLines = '.\n'.repeat(Math.random() * 20)
+      const rndColor = Array.from(Array(3))
+        .map(() => Math.floor(Math.random() * 100 + 155))
+        .join(', ')
+      setContent(`${msg}\n${rndLines}end`)
+      setBackground(`rgb(${rndColor})`)
+    }
+    const style = {
+      background,
+      transition: '300ms /* overwriting default transition for height */',
+      whiteSpace: 'pre',
+      cursor: 'pointer',
+    }
     return (
-      <div onClick={() => setIsShort(x => !x)}>
-        <AutoHeight>{content}</AutoHeight>
-      </div>
+      <AutoHeight onClick={handleClick} style={style}>
+        {content}
+      </AutoHeight>
     )
   })
   // TODO: more examples
