@@ -1,0 +1,14 @@
+.additional-css,
+.nested {
+  white-space: pre;
+  cursor: pointer;
+}
+
+.nested > div {
+  display: flex;
+  align-items: flex-start;
+}
+
+.nested > div > div {
+  min-width: 130px;
+}

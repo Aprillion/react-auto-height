@@ -1,0 +1,6 @@
+.react-auto-height {
+  display: flex; /* include margins from the children */
+  flex-direction: column; /* recalculate height when content is smaller */
+  overflow: hidden; /* hide scroll bar */
+  transition: height 200ms;
+}

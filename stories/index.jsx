@@ -3,6 +3,7 @@ import {storiesOf} from '@storybook/react'
 import {withInfo} from '@storybook/addon-info'
 
 import AutoHeight from '../src'
+import './index.css'
 
 const header = (
   <p>
@@ -13,8 +14,6 @@ const header = (
     .
   </p>
 )
-
-const minWidth = 130
 
 storiesOf('AutoHeight', module)
   .addDecorator(withInfo)
@@ -36,7 +35,7 @@ storiesOf('AutoHeight', module)
     },
   })
   .add('Dynamic content', () => {
-    const [content, setContent] = useState('\n ')
+    const [content, setContent] = useState('\n.')
     const [background, setBackground] = useState('orange')
     const handleClick = () => {
       const rndLines = '.\n'.repeat(Math.random() * 20)
@@ -48,53 +47,51 @@ storiesOf('AutoHeight', module)
     }
     const style = {
       background,
-      transition: '300ms /* overwriting transition for height */',
-      whiteSpace: 'pre',
-      cursor: 'pointer',
+      transition: '300ms; /* overwrite transition for height */',
     }
     return (
-      <>
-        <AutoHeight onClick={handleClick} style={style}>
-          click here multiple times to change content
-          {content}
-        </AutoHeight>
-      </>
+      <AutoHeight
+        className="additional-css"
+        style={style}
+        onClick={handleClick}
+      >
+        click here multiple times to change content
+        {content}
+      </AutoHeight>
     )
   })
   .add('Nested AutoHeights', () => {
     const [isShort, setIsShort] = useState(true)
     const handleClick = () => setIsShort(prev => !prev)
-    const extra = isShort ? null : (
-      <pre style={{margin: 0}}>{' ... extra\n ... extra'}</pre>
-    )
+    const extra = isShort ? null : <div>{' ... extra\n ... extra'}</div>
     return (
-      <div onClick={handleClick} style={{cursor: 'pointer'}}>
-        <div style={{display: 'flex', alignItems: 'flex-start'}}>
-          <div style={{background: 'salmon', minWidth}}>
+      <div onClick={handleClick} className="nested">
+        <div>
+          <div style={{background: 'salmon'}}>
             none:
             <div>.{extra}</div>
             <div>.{extra}</div>
             <b>{extra}</b>. ✗
           </div>
-          <AutoHeight style={{background: 'orange', minWidth}}>
+          <AutoHeight style={{background: 'orange'}}>
             outer AutoHeight:
             <div>.{extra}</div>
             <div>.{extra}</div>
             <b>{extra}</b>. ✗
           </AutoHeight>
-          <div style={{background: 'gold', minWidth}}>
+          <div style={{background: 'gold'}}>
             inner AutoHeights:
             <AutoHeight>.{extra}</AutoHeight>
             <AutoHeight>.{extra}</AutoHeight>
             <b>{extra}</b>. ✓
           </div>
-          <AutoHeight style={{background: 'yellowgreen', minWidth}}>
+          <AutoHeight style={{background: 'yellowgreen'}}>
             2 levels of nesting:
             <AutoHeight>.{extra}</AutoHeight>
             <AutoHeight>.{extra}</AutoHeight>
             <b>{extra}</b>. ✓
           </AutoHeight>
-          <AutoHeight style={{background: 'greenyellow', minWidth}}>
+          <AutoHeight style={{background: 'greenyellow'}}>
             3 levels of nesting:
             <AutoHeight>
               <AutoHeight>.</AutoHeight>
