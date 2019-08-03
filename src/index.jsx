@@ -8,6 +8,7 @@ const outerStyle = {
   transition: 'height 300ms cubic-bezier(0.4, 0, 0.2, 1)', // same as Material UI 'MuiCollapse-container'
 }
 
+const PREV_HEIGHT = 'data-react-auto-height-start-value'
 const AutoHeight = ({children, style, ...props}) => {
   const ref = useRef()
 
@@ -17,16 +18,26 @@ const AutoHeight = ({children, style, ...props}) => {
       return
     }
 
-    // find children with previous height and adjust the target height accordingly
-    el.setAttribute('data-prev-height', el.style.height)
-    let diff = 0
-    for (const child of el.firstChild.children) {
-      let prev = child.getAttribute('data-prev-height')
-      if (prev) {
-        diff += child.firstChild.scrollHeight - parseInt(prev)
+    // find descendants created by nested AutoHeights and adjust future height of current element by the future heights of children
+    let adjustBy = 0
+    let descendants = Array.from(el.firstChild.children)
+    for (let child of descendants) {
+      let prevHeight = child.getAttribute(PREV_HEIGHT)
+      if (prevHeight) {
+        child = child.firstChild // skip the outer wrapper
+        adjustBy += child.scrollHeight - parseInt(prevHeight)
+      }
+      if (child.children && child.children.length) {
+        Array.from(child.children).forEach(grandChild => {
+          if (grandChild.getAttribute) {
+            descendants.push(grandChild)
+          }
+        })
       }
     }
-    el.style.height = el.firstChild.scrollHeight + diff + 'px'
+
+    el.setAttribute(PREV_HEIGHT, el.style.height)
+    el.style.height = el.firstChild.scrollHeight + adjustBy + 'px'
   })
 
   if (style) {

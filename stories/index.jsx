@@ -55,72 +55,67 @@ storiesOf('AutoHeight', module)
     return (
       <>
         <AutoHeight onClick={handleClick} style={style}>
-          click here to change content
+          click here multiple times to change content
           {content}
         </AutoHeight>
       </>
     )
   })
-  .add('Nested AutoHeights are OK', () => {
+  .add('Nested AutoHeights', () => {
     const [isShort, setIsShort] = useState(true)
     const handleClick = () => setIsShort(prev => !prev)
     const extra = isShort ? null : (
       <pre style={{margin: 0}}>{' ... extra\n ... extra'}</pre>
     )
     return (
-      <div onClick={handleClick}>
-        <i>(click to change content)</i>
+      <div onClick={handleClick} style={{cursor: 'pointer'}}>
         <div style={{display: 'flex', alignItems: 'flex-start'}}>
           <div style={{background: 'salmon', minWidth}}>
             none:
-            <div>a{extra}</div>
-            <div>b{extra}</div>
-            <div>c{extra}</div>
-            {extra}✗
+            <div>.{extra}</div>
+            <div>.{extra}</div>
+            <b>{extra}</b>. ✗
           </div>
           <AutoHeight style={{background: 'orange', minWidth}}>
             outer AutoHeight:
-            <div>a{extra}</div>
-            <div>b{extra}</div>
-            <div>c{extra}</div>
-            {extra}✗
+            <div>.{extra}</div>
+            <div>.{extra}</div>
+            <b>{extra}</b>. ✗
           </AutoHeight>
           <div style={{background: 'gold', minWidth}}>
             inner AutoHeights:
-            <AutoHeight>a{extra}</AutoHeight>
-            <AutoHeight>b{extra}</AutoHeight>
-            <AutoHeight>c{extra}</AutoHeight>
-            {extra}✓
+            <AutoHeight>.{extra}</AutoHeight>
+            <AutoHeight>.{extra}</AutoHeight>
+            <b>{extra}</b>. ✓
           </div>
           <AutoHeight style={{background: 'yellowgreen', minWidth}}>
             2 levels of nesting:
-            <AutoHeight>a{extra}</AutoHeight>
-            <AutoHeight>b{extra}</AutoHeight>
-            <AutoHeight>c{extra}</AutoHeight>
-            {extra}✓
+            <AutoHeight>.{extra}</AutoHeight>
+            <AutoHeight>.{extra}</AutoHeight>
+            <b>{extra}</b>. ✓
           </AutoHeight>
-          <AutoHeight style={{background: 'gold', minWidth}}>
+          <AutoHeight style={{background: 'greenyellow', minWidth}}>
             3 levels of nesting:
             <AutoHeight>
-              <AutoHeight>a</AutoHeight>
+              <AutoHeight>.</AutoHeight>
               <AutoHeight>{extra}</AutoHeight>
             </AutoHeight>
             <AutoHeight>
-              <AutoHeight>b</AutoHeight>
+              <AutoHeight>.</AutoHeight>
               <AutoHeight>{extra}</AutoHeight>
             </AutoHeight>
-            <AutoHeight>
-              <AutoHeight>c</AutoHeight>
+            <b>
               <AutoHeight>{extra}</AutoHeight>
-            </AutoHeight>
-            <AutoHeight>{extra}</AutoHeight>¯\_(ツ)_/¯
+            </b>
+            . ✓
           </AutoHeight>
         </div>
+        <i>(click to change content)</i>
         <p>Nested AutoHeights should work fine. Please test more carefully.</p>
       </div>
     )
   })
-  .add('Interferes with margin collapsing', () => {
+  .add('Interference with margin collapse', () => {
     const [isShort, setIsShort] = useState(true)
     const handleClick = () => setIsShort(prev => !prev)
     const extra = isShort ? null : (
@@ -132,19 +127,22 @@ storiesOf('AutoHeight', module)
 
     return (
       <div onClick={handleClick}>
-        <p>
-          paragraph <i>(click to change content)</i>
-        </p>
+        <p>paragraph</p>
         <p>paragraph</p>
         <p>
           <AutoHeight>
-            Good-enough AutoHeight, inside margin-significant element{extra}
+            <b>Good AutoHeight, inside an element with margin</b>
+            {extra}
           </AutoHeight>
         </p>
         <p>paragraph</p>
+        <p>paragraph</p>
         <AutoHeight>
           <p>
-            Incorrect AutoHeight, preventing{' '}
+            <b>
+              Bad AutoHeight, containning a block element with margin,
+              preventing
+            </b>{' '}
             <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Box_Model/Mastering_margin_collapsing">
               margin collapse
             </a>
@@ -152,6 +150,8 @@ storiesOf('AutoHeight', module)
           </p>
         </AutoHeight>
         <p>paragraph</p>
+        <p>paragraph</p>
+        <i>(click to change content)</i>
       </div>
     )
   })
