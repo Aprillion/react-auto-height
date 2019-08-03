@@ -4,6 +4,18 @@ import {withInfo} from '@storybook/addon-info'
 
 import AutoHeight from '../src'
 
+const header = (
+  <p>
+    This is a demo of{' '}
+    <a href="https://github.com/Aprillion/react-auto-height">
+      react-auto-height
+    </a>
+    .
+  </p>
+)
+
+const minWidth = 130
+
 storiesOf('AutoHeight', module)
   .addDecorator(withInfo)
   .addDecorator(Story => <Story />)
@@ -15,6 +27,7 @@ storiesOf('AutoHeight', module)
     info: {
       inline: true,
       header: false,
+      text: header,
       styles: {
         infoBody: {
           background: '#ddd',
@@ -23,15 +36,14 @@ storiesOf('AutoHeight', module)
     },
   })
   .add('Dynamic content', () => {
-    const msg = 'click to change content'
-    const [content, setContent] = useState(msg)
+    const [content, setContent] = useState('\n ')
     const [background, setBackground] = useState('orange')
     const handleClick = () => {
       const rndLines = '.\n'.repeat(Math.random() * 20)
       const rndColor = Array.from(Array(3))
         .map(() => Math.floor(Math.random() * 100 + 155))
         .join(', ')
-      setContent(`${msg}\n${rndLines}end`)
+      setContent(`\n${rndLines}end`)
       setBackground(`rgb(${rndColor})`)
     }
     const style = {
@@ -41,12 +53,74 @@ storiesOf('AutoHeight', module)
       cursor: 'pointer',
     }
     return (
-      <AutoHeight onClick={handleClick} style={style}>
-        {content}
-      </AutoHeight>
+      <>
+        <AutoHeight onClick={handleClick} style={style}>
+          click here to change content
+          {content}
+        </AutoHeight>
+      </>
     )
   })
-  .add('Margin collapsing', () => {
+  .add('Nested AutoHeights are OK', () => {
+    const [isShort, setIsShort] = useState(true)
+    const handleClick = () => setIsShort(prev => !prev)
+    const extra = isShort ? null : (
+      <pre style={{margin: 0}}>{' ... extra\n ... extra'}</pre>
+    )
+    return (
+      <div onClick={handleClick}>
+        <i>(click to change content)</i>
+        <div style={{display: 'flex', alignItems: 'flex-start'}}>
+          <div style={{background: 'salmon', minWidth}}>
+            none:
+            <div>a{extra}</div>
+            <div>b{extra}</div>
+            <div>c{extra}</div>
+            {extra}✗
+          </div>
+          <AutoHeight style={{background: 'orange', minWidth}}>
+            outer AutoHeight:
+            <div>a{extra}</div>
+            <div>b{extra}</div>
+            <div>c{extra}</div>
+            {extra}✗
+          </AutoHeight>
+          <div style={{background: 'gold', minWidth}}>
+            inner AutoHeights:
+            <AutoHeight>a{extra}</AutoHeight>
+            <AutoHeight>b{extra}</AutoHeight>
+            <AutoHeight>c{extra}</AutoHeight>
+            {extra}✓
+          </div>
+          <AutoHeight style={{background: 'yellowgreen', minWidth}}>
+            2 levels of nesting:
+            <AutoHeight>a{extra}</AutoHeight>
+            <AutoHeight>b{extra}</AutoHeight>
+            <AutoHeight>c{extra}</AutoHeight>
+            {extra}✓
+          </AutoHeight>
+          <AutoHeight style={{background: 'gold', minWidth}}>
+            3 levels of nesting:
+            <AutoHeight>
+              <AutoHeight>a</AutoHeight>
+              <AutoHeight>{extra}</AutoHeight>
+            </AutoHeight>
+            <AutoHeight>
+              <AutoHeight>b</AutoHeight>
+              <AutoHeight>{extra}</AutoHeight>
+            </AutoHeight>
+            <AutoHeight>
+              <AutoHeight>c</AutoHeight>
+              <AutoHeight>{extra}</AutoHeight>
+            </AutoHeight>
+            <AutoHeight>{extra}</AutoHeight>¯\_(ツ)_/¯
+          </AutoHeight>
+        </div>
+        <p>Nested AutoHeights should work fine. Please test more carefully.</p>
+      </div>
+    )
+  })
+  .add('Interferes with margin collapsing', () => {
     const [isShort, setIsShort] = useState(true)
     const handleClick = () => setIsShort(prev => !prev)
     const extra = isShort ? null : (
@@ -81,45 +155,9 @@ storiesOf('AutoHeight', module)
       </div>
     )
   })
-  .add('Nested AutoHeights', () => {
-    const [isShort, setIsShort] = useState(true)
-    const handleClick = () => setIsShort(prev => !prev)
-    const extra = isShort ? null : <pre>{' ... extra\n ... extra'}</pre>
-    return (
-      <div onClick={handleClick}>
-        <i>(click to change content)</i>
-        <div style={{display: 'flex', alignItems: 'flex-start'}}>
-          <AutoHeight style={{background: 'orange', minWidth: 150}}>
-            nested:
-            <AutoHeight>1{extra}</AutoHeight>
-            <AutoHeight>2{extra}</AutoHeight>
-            <AutoHeight>3{extra}</AutoHeight>✗
-          </AutoHeight>
-          <AutoHeight style={{background: 'gold', minWidth: 150}}>
-            outer only:
-            <div>1{extra}</div>
-            <div>2{extra}</div>
-            <div>3{extra}</div>
-            ¯\_(ツ)_/¯
-          </AutoHeight>
-          <div style={{background: 'yellowgreen', minWidth: 150}}>
-            inner only:
-            <AutoHeight>1{extra}</AutoHeight>
-            <AutoHeight>2{extra}</AutoHeight>
-            <AutoHeight>3{extra}</AutoHeight>✓
-          </div>
-        </div>
-        <p>
-          Nested AutoHeight components will take longer to animate, +100%
-          for each level because an outer layer has to wait until inner layers
-          reach their final height.
-        </p>
-      </div>
-    )
-  })
-  .add('Without AutoHeight', () => {
+  .add('Do NOT combine with other solutions', () => {
     const handleAutoResize = ev => {
-      ev.currentTarget.style.height = ev.currentTarget.scrollHeight + 'px'
+      ev.currentTarget.style.height = ev.currentTarget.scrollHeight - 2 + 'px'
     }
     return (
       <div>
@@ -131,7 +169,10 @@ storiesOf('AutoHeight', module)
           placeholder="I will expand for longer text"
         />
         <AutoHeight>
-          <textarea onKeyDown={handleAutoResize} placeholder="I will too, but AutoHeight will not detect it" />
+          <textarea
+            onKeyDown={handleAutoResize}
+            placeholder="I will too, but AutoHeight will not detect it"
+          />
         </AutoHeight>
       </div>
     )

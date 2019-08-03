@@ -17,19 +17,16 @@ const AutoHeight = ({children, style, ...props}) => {
       return
     }
 
-    const updateHeight = () => {
-      el.style.height = el.firstChild.scrollHeight + 'px'
-    }
-    updateHeight()
-
-    // workaround for nested AutoHeight elements
-    const checkHeight = () => {
-      el.removeEventListener('transitionend', checkHeight)
-      if (el.clientHeight !== el.firstChild.scrollHeight) {
-        updateHeight()
+    // find children with previous height and adjust the target height accordingly
+    el.setAttribute('data-prev-height', el.style.height)
+    let diff = 0
+    for (const child of el.firstChild.children) {
+      let prev = child.getAttribute('data-prev-height')
+      if (prev) {
+        diff += child.firstChild.scrollHeight - parseInt(prev)
       }
     }
-    el.addEventListener('transitionend', checkHeight)
+    el.style.height = el.firstChild.scrollHeight + diff + 'px'
   })
 
   if (style) {
