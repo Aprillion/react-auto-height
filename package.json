@@ -1,6 +1,6 @@
 {
   "name": "react-auto-height",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Automagical transition of `height: auto` elements when their content is changed.",
   "main": "build/index.js",
   "scripts": {
