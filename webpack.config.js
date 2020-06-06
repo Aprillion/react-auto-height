@@ -6,6 +6,7 @@ module.exports = {
     path: path.resolve(__dirname, 'build'),
     filename: 'index.js',
     libraryTarget: 'commonjs2',
+    globalObject: 'this',
   },
   module: {
     rules: [
@@ -18,7 +19,7 @@ module.exports = {
       },
       {
         test: /\.css$/i,
-        use: ['style-loader', 'css-loader'],
+        use: ['isomorphic-style-loader', 'css-loader'],
       },
     ],
   },

@@ -25,7 +25,7 @@ const AutoHeight = ({children, className, ...props}) => {
           adjustBy += child.scrollHeight - parseInt(prevHeight)
         }
         if (child.children && child.children.length) {
-          Array.from(child.children).forEach(grandChild => {
+          Array.from(child.children).forEach((grandChild) => {
             if (grandChild.getAttribute) {
               descendants.push(grandChild)
             }

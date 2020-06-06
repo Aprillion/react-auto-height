@@ -28,3 +28,16 @@ return (
 ```
 
 See the Storybook in https://aprillion.github.io/react-auto-height for more examples.
+
+### Development
+
+```bash
+npm i
+npm audit fix
+npm start
+# make changes and manually test dynamic interactions in storybook
+# update version in package.json
+npm run build
+git
+npm publish
+```
