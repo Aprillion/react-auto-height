@@ -1,3 +1,13 @@
+pre {
+  background: #eee;
+  margin: 5px 0;
+  padding: 10px 0;
+}
+
+p {
+  margin: 20px 0;
+}
+
 .additional-css,
 .nested {
   white-space: pre;
@@ -11,4 +21,5 @@
 
 .nested > div > div {
   min-width: 130px;
+  margin-right: 5px;
 }

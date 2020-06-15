@@ -1,56 +1,37 @@
 import React, {useState} from 'react'
 import {storiesOf} from '@storybook/react'
-import {withInfo} from '@storybook/addon-info'
 
-import AutoHeight from '../src'
+import AutoHeight, {AutoHeightOfChildren} from '../src'
 import './index.css'
 
-const header = (
-  <p>
-    This is a demo of <a href="https://github.com/Aprillion/react-auto-height">react-auto-height</a>
-    .
-  </p>
-)
+const rndColor = () =>
+  `rgb(${Array.from(Array(3))
+    .map(() => Math.floor(Math.random() * 100 + 155))
+    .join(', ')})`
 
-storiesOf('AutoHeight', module)
-  .addDecorator(withInfo)
-  .addDecorator((Story) => <Story />)
-  .addParameters({
-    options: {
-      showPanel: false,
-      isToolshown: false,
-    },
-    info: {
-      inline: true,
-      header: false,
-      text: header,
-      styles: {
-        infoBody: {
-          background: '#ddd',
-        },
-      },
-    },
-  })
-  .add('Dynamic content', () => {
+storiesOf('AutoHeight')
+  .add('default', () => {
     const [content, setContent] = useState('\n.')
-    const [background, setBackground] = useState('orange')
+    const [background, setBackground] = useState('yellowgreen')
     const handleClick = () => {
       const rndLines = '.\n'.repeat(Math.random() * 20)
-      const rndColor = Array.from(Array(3))
-        .map(() => Math.floor(Math.random() * 100 + 155))
-        .join(', ')
       setContent(`\n${rndLines}end`)
-      setBackground(`rgb(${rndColor})`)
-    }
-    const style = {
-      background,
-      transition: '300ms /* overwrite transition for height */',
+      setBackground(rndColor())
     }
     return (
-      <AutoHeight className="additional-css" style={style} onClick={handleClick}>
-        click here multiple times to change content
-        {content}
-      </AutoHeight>
+      <div onClick={handleClick}>
+        <pre>{`
+          import AutoHeight from 'react-auto-height'
+          
+          <AutoHeight className="additional-css" style={{background}} onClick={handleClick}>
+            {dynamicContent}
+          </AutoHeight>
+        `}</pre>
+        <AutoHeight className="additional-css" style={{background}}>
+          click here multiple times to change content
+          {content}
+        </AutoHeight>
+      </div>
     )
   })
   .add('Nested AutoHeights', () => {
@@ -61,31 +42,35 @@ storiesOf('AutoHeight', module)
       <div onClick={handleClick} className="nested">
         <div>
           <div style={{background: 'salmon'}}>
+            <pre>{'<div>\n  <div />\n  <div />\n</div>'}</pre>
             none:
             <div>.{extra}</div>
             <div>.{extra}</div>
             <b>{extra}</b>. ✗
           </div>
           <AutoHeight style={{background: 'orange'}}>
+            <pre>{'<AutoHeight>\n  <div />\n  <div />\n</AutoHeight>'}</pre>
             outer AutoHeight:
             <div>.{extra}</div>
             <div>.{extra}</div>
             <b>{extra}</b>. ✗
           </AutoHeight>
           <div style={{background: 'gold'}}>
+            <pre>{'<div>\n  <AutoHeight />\n  <AutoHeight />\n</div>'}</pre>
             inner AutoHeights:
             <AutoHeight>.{extra}</AutoHeight>
             <AutoHeight>.{extra}</AutoHeight>
             <b>{extra}</b>. ✓
           </div>
           <AutoHeight style={{background: 'yellowgreen'}}>
-            2 levels of nesting:
+            <pre>{'<AutoHeight>\n  <AutoHeight />\n  <AutoHeight />\n</AutoHeight>'}</pre>2 levels
+            of nesting:
             <AutoHeight>.{extra}</AutoHeight>
             <AutoHeight>.{extra}</AutoHeight>
             <b>{extra}</b>. ✓
           </AutoHeight>
           <AutoHeight style={{background: 'greenyellow'}}>
-            3 levels of nesting:
+            <pre>{'<AutoHeight>\n  ...\n  ...\n</AutoHeight>'}</pre>3 levels of nesting:
             <AutoHeight>
               <AutoHeight>.</AutoHeight>
               <AutoHeight>{extra}</AutoHeight>
@@ -105,6 +90,66 @@ storiesOf('AutoHeight', module)
       </div>
     )
   })
+  .add('AutoHeightsOfChildren', () => {
+    const [parentCounter, setCounter] = useState(0)
+    const items = ['1st', '2nd', '3rd', '4th', '5th']
+
+    const createClickHandler = (updateHeight) => (event) => {
+      event.stopPropagation()
+      const current = event.target.innerText
+      event.target.innerText = current.includes('.')
+        ? current.replace(/(\s\.)+/g, '')
+        : current + '\n.\n.'
+      updateHeight()
+    }
+
+    const handleReRender = () => {
+      setCounter((prev) => prev + 1)
+    }
+
+    return (
+      <div onClick={handleReRender}>
+        <pre>{`
+          import {AutoHeightOfChildren} from 'react-auto-height'
+          
+          <AutoHeightOfChildren element="ul">
+            {(updateHeight) => (
+              
+              {items.map((item) => (
+                <li onClick={createClickHandler(updateHeight)} className="some-transition" key={item}>
+                  {item}
+                </li>
+              ))}
+              
+            )}
+          </AutoHeightOfChildren>
+        `}</pre>
+        <AutoHeightOfChildren element="ul">
+          {(updateHeight) => (
+            <>
+              {items.map((item) => (
+                <li
+                  key={item}
+                  onClick={createClickHandler(updateHeight)}
+                  className="additional-css"
+                  style={{
+                    transition: '300ms cubic-bezier(0.5, -0.5, 0.5, 1.5) ',
+                    background: rndColor(),
+                  }}
+                >
+                  {item}
+                </li>
+              ))}
+            </>
+          )}
+        </AutoHeightOfChildren>
+        <i>
+          (click an item to change content, click here to re-render random colors of parent: #
+          {parentCounter})
+        </i>
+      </div>
+    )
+  })
   .add('Interference with margin collapse', () => {
     const [isShort, setIsShort] = useState(true)
     const handleClick = () => setIsShort((prev) => !prev)
@@ -116,30 +161,36 @@ storiesOf('AutoHeight', module)
     )
 
     return (
-      <div onClick={handleClick}>
-        <p>paragraph</p>
-        <p>paragraph</p>
+      <pre onClick={handleClick}>
+        <span>{'<p>...</p>'}</span>
+        <p>{'<p>...</p>'}</p>
         <p>
-          <AutoHeight>
-            <b>AutoHeight works fine inside an element with margin</b>
-            {extra}
+          <AutoHeight style={{background: 'yellowgreen'}}>
+            {'<p>\n  <AutoHeight>'} <b>works fine inside an element with margin</b> {extra}
+            {'  </AutoHeight>\n</p>'}
           </AutoHeight>
         </p>
-        <p>paragraph</p>
-        <p>paragraph</p>
+        <p>{'<p>...</p>'}</p>
         <AutoHeight>
-          <p>
-            <b>AutoHeight that contains an element with margin will prevent</b>{' '}
-            <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Box_Model/Mastering_margin_collapsing">
-              margin collapse
-            </a>
+          <p style={{background: 'gold'}}>
+            {'<AutoHeight>\n  <p>'}{' '}
+            <b>
+              if AutoHeight contains an element with margin, it will prevent{' '}
+              <a
+                href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Box_Model/Mastering_margin_collapsing"
+                target="_blank"
+                rel="noopener"
+              >
+                margin collapse
+              </a>
+            </b>
             {extra}
+            {'  </p>\n</AutoHeight>'}
           </p>
         </AutoHeight>
-        <p>paragraph</p>
-        <p>paragraph</p>
+        <p>{'<p>...</p>'}</p>
         <i>(click to change content)</i>
-      </div>
+      </pre>
     )
   })
   .add('Do NOT combine with other solutions', () => {
@@ -151,13 +202,29 @@ storiesOf('AutoHeight', module)
         Please do NOT combine AutoHeight with other auto-resizing solutions, e.g. a dynamic
         textarea:
         <br />
-        <textarea onKeyDown={handleAutoResize} placeholder="I will expand for longer text" />
-        <AutoHeight>
-          <textarea
-            onKeyDown={handleAutoResize}
-            placeholder="I will too, but AutoHeight will not detect it"
-          />
+        <AutoHeight style={{background: 'orange'}}>
+          AutoHeight + other solution will NOT work: ✗ <textarea onKeyDown={handleAutoResize} />
         </AutoHeight>
+        <div style={{background: 'gold'}}>
+          Other solution only: ✓ <textarea onKeyDown={handleAutoResize} />
+        </div>
+        <AutoHeightOfChildren style={{background: 'yellowgreen'}}>
+          {(updateHeight) => (
+            <>
+              AutoHeightOfChildren (without other solution): ✓ <textarea onKeyDown={updateHeight} />
+            </>
+          )}
+        </AutoHeightOfChildren>
+        <pre>{`
+          <AutoHeightOfChildren>
+            {(updateHeight) => (
+            
+              <textarea onKeyDown={updateHeight} />
+              
+            )}
+          </AutoHeightOfChildren>
+        `}</pre>
+        <i>(try typing long text into textareas)</i>
       </div>
     )
   })
