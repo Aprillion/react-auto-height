@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import './index.css'
 
 const PREV_HEIGHT = 'data-react-auto-height-start-value'
-const AutoHeight = ({children, className, ...props}) => {
+const AutoHeight = ({children, className = '', ...props}) => {
   const ref = useRef()
 
   useEffect(() => {
@@ -45,9 +45,11 @@ const AutoHeight = ({children, className, ...props}) => {
   )
 }
 
-export default memo(AutoHeight)
+const AutoHeightMemo = memo(AutoHeight)
+export default AutoHeightMemo
 
-AutoHeight.propTypes = {
+AutoHeightMemo.displayName = 'AutoHeigh'
+AutoHeightMemo.propTypes = {
   children: PropTypes.node,
   /** Props are propagated to the outer wrapper div - including style, className, data-test-id, ... */
   '...props': PropTypes.string,
