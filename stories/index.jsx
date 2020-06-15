@@ -1,7 +1,7 @@
 import React, {useState} from 'react'
 import {storiesOf} from '@storybook/react'
 
-import AutoHeight, {AutoHeightOfChildren} from '../src'
+import AutoHeight from '../src'
 import './index.css'
 
 const rndColor = () =>
@@ -90,6 +90,41 @@ storiesOf('AutoHeight')
       </div>
     )
   })
+  .add('Parents of re-rendered children', () => {
+    const Child = () => {
+      const [isShot, setShort] = useState(true)
+      const content = isShot
+        ? '  <AutoHeight>short</AutoHeight>'
+        : '  <AutoHeight>\n    long\n    long\n  </AutoHeight>'
+      const handleClick = () => setShort((prev) => !prev)
+      return (
+        <AutoHeight
+          onClick={handleClick}
+          className="additional-css"
+          style={{background: 'yellowgreen'}}
+        >
+          {content}
+        </AutoHeight>
+      )
+    }
+
+    return (
+      <pre>
+        <AutoHeight>
+          {'<AutoHeight>'}
+          <Child />
+          {'  '}...
+          <Child />
+          {'</AutoHeight>'}
+        </AutoHeight>
+        <br />
+        <i>
+          (click on individual children to re-render them and update parent height, without
+          re-rendering the parent)
+        </i>
+      </pre>
+    )
+  })
   .add('AutoHeightsOfChildren', () => {
     const [parentCounter, setCounter] = useState(0)
     const items = ['1st', '2nd', '3rd', '4th', '5th']
@@ -110,9 +145,7 @@ storiesOf('AutoHeight')
     return (
       <div onClick={handleReRender}>
         <pre>{`
-          import {AutoHeightOfChildren} from 'react-auto-height'
-          
-          <AutoHeightOfChildren element="ul">
+          <AutoHeight element="ul">
             {(updateHeight) => (
               
               {items.map((item) => (
@@ -122,9 +155,9 @@ storiesOf('AutoHeight')
               ))}
               
             )}
-          </AutoHeightOfChildren>
+          </AutoHeight>
         `}</pre>
-        <AutoHeightOfChildren element="ul">
+        <AutoHeight element="ul">
           {(updateHeight) => (
             <>
               {items.map((item) => (
@@ -142,7 +175,7 @@ storiesOf('AutoHeight')
               ))}
             </>
           )}
-        </AutoHeightOfChildren>
+        </AutoHeight>
         <i>
           (click an item to change content, click here to re-render random colors of parent: #
           {parentCounter})
@@ -203,26 +236,26 @@ storiesOf('AutoHeight')
         textarea:
         <br />
         <AutoHeight style={{background: 'orange'}}>
-          AutoHeight + other solution will NOT work: ✗ <textarea onKeyDown={handleAutoResize} />
+          AutoHeight + other solution will NOT work: ✗ <textarea onKeyPress={handleAutoResize} />
         </AutoHeight>
         <div style={{background: 'gold'}}>
-          Other solution only: ✓ <textarea onKeyDown={handleAutoResize} />
+          Other solution only: ✓ <textarea onKeyPress={handleAutoResize} />
         </div>
-        <AutoHeightOfChildren style={{background: 'yellowgreen'}}>
+        <AutoHeight style={{background: 'yellowgreen'}}>
           {(updateHeight) => (
             <>
-              AutoHeightOfChildren (without other solution): ✓ <textarea onKeyDown={updateHeight} />
+              AutoHeight (without other solution): ✓ <textarea onKeyPress={updateHeight} />
             </>
           )}
-        </AutoHeightOfChildren>
+        </AutoHeight>
         <pre>{`
-          <AutoHeightOfChildren>
+          <AutoHeight>
             {(updateHeight) => (
             
-              <textarea onKeyDown={updateHeight} />
+              <textarea onKeyPress={updateHeight} />
               
             )}
-          </AutoHeightOfChildren>
+          </AutoHeight>
         `}</pre>
         <i>(try typing long text into textareas)</i>
       </div>

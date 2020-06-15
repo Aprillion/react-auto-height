@@ -1,9 +1,8 @@
-import React, {memo, useEffect, useRef, Component} from 'react'
-import PropTypes from 'prop-types'
+import React, {useEffect, useRef} from 'react'
 import './index.css'
 
 const myClassName = 'react-auto-height'
-const myDataAttribute = 'data-react-auto-height-previous-height'
+const myPrevHeight = 'data-react-auto-height-previous-height'
 const setNewHeight = (el) => {
   const origDelay = getComputedStyle(el).getPropertyValue('transition-delay')
   const origDuration = getComputedStyle(el).getPropertyValue('transition-duration')
@@ -13,10 +12,10 @@ const setNewHeight = (el) => {
   // skip for first render
   let adjustBy = 0
   if (el.style.height) {
-    el.setAttribute(myDataAttribute, el.style.height)
+    el.setAttribute(myPrevHeight, el.style.height)
     let descendants = Array.from(el.children)
     for (const child of descendants) {
-      const prevHeight = child.getAttribute(myDataAttribute)
+      const prevHeight = child.getAttribute(myPrevHeight)
       if (prevHeight) {
         adjustBy += parseInt(child.style.height) - parseInt(prevHeight)
       } else if (child.children && child.children.length) {
@@ -32,8 +31,10 @@ const setNewHeight = (el) => {
   el.style.transitionDelay = '0'
   el.style.transitionDuration = '0'
   el.style.height = 'auto'
+
   const newHeight = el.scrollHeight + adjustBy + 'px'
   el.style.height = origHeight
+
   el.scrollHeight // force reflow before re-enabling transitions
 
   el.style.transitionDelay = origDelay
@@ -41,29 +42,7 @@ const setNewHeight = (el) => {
   el.style.height = newHeight
 }
 
-export const AutoHeight = ({children, className: propClassName = '', ...props}) => {
-  const ref = useRef()
-
-  useEffect(() => {
-    const {current: el} = ref
-    el && setNewHeight(el)
-  })
-
-  return (
-    <div ref={ref} className={`${myClassName} ${propClassName}`} {...props}>
-      {children}
-    </div>
-  )
-}
-AutoHeight.displayName = 'AutoHeigh'
-export default AutoHeight
-
-export const AutoHeightOfChildren = ({
-  children,
-  element = 'div',
-  className: propClassName = '',
-  ...props
-}) => {
+const AutoHeight = ({children, element = 'div', className: propClassName = '', ...props}) => {
   const Element = element
   const ref = useRef()
 
@@ -78,13 +57,19 @@ export const AutoHeightOfChildren = ({
   }
 
   useEffect(() => {
-    updateHeight()
+    if (typeof children === 'function') {
+      updateHeight()
+    } else {
+      const {current: el} = ref
+      el && setNewHeight(el)
+    }
   })
 
   return (
     <Element ref={ref} className={`${myClassName} ${propClassName}`} {...props}>
-      {children(updateHeight)}
+      {typeof children === 'function' ? children(updateHeight) : children}
     </Element>
   )
 }
-AutoHeightOfChildren.displayName = 'AutoHeightOfChildren'
+AutoHeight.displayName = 'AutoHeigh'
+export default AutoHeight
