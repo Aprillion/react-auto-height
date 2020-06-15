@@ -42,35 +42,36 @@ storiesOf('AutoHeight')
       <div onClick={handleClick} className="nested">
         <div>
           <div style={{background: 'salmon'}}>
-            <pre>{'<div>\n  <div />\n  <div />\n</div>'}</pre>
             none:
+            <pre>{'<div>\n  <div />\n  <div />\n</div>'}</pre>
             <div>.{extra}</div>
             <div>.{extra}</div>
             <b>{extra}</b>. ✗
           </div>
           <AutoHeight style={{background: 'orange'}}>
-            <pre>{'<AutoHeight>\n  <div />\n  <div />\n</AutoHeight>'}</pre>
             outer AutoHeight:
+            <pre>{'<AutoHeight>\n  <div />\n  <div />\n</AutoHeight>'}</pre>
             <div>.{extra}</div>
             <div>.{extra}</div>
             <b>{extra}</b>. ✗
           </AutoHeight>
           <div style={{background: 'gold'}}>
-            <pre>{'<div>\n  <AutoHeight />\n  <AutoHeight />\n</div>'}</pre>
             inner AutoHeights:
+            <pre>{'<div>\n  <AutoHeight />\n  <AutoHeight />\n</div>'}</pre>
             <AutoHeight>.{extra}</AutoHeight>
             <AutoHeight>.{extra}</AutoHeight>
             <b>{extra}</b>. ✓
           </div>
           <AutoHeight style={{background: 'yellowgreen'}}>
-            <pre>{'<AutoHeight>\n  <AutoHeight />\n  <AutoHeight />\n</AutoHeight>'}</pre>2 levels
-            of nesting:
+            2 levels of nesting:
+            <pre>{'<AutoHeight>\n  <AutoHeight />\n  <AutoHeight />\n</AutoHeight>'}</pre>
             <AutoHeight>.{extra}</AutoHeight>
             <AutoHeight>.{extra}</AutoHeight>
             <b>{extra}</b>. ✓
           </AutoHeight>
           <AutoHeight style={{background: 'greenyellow'}}>
-            <pre>{'<AutoHeight>\n  ...\n  ...\n</AutoHeight>'}</pre>3 levels of nesting:
+            3 levels of nesting:
+            <pre>{'<AutoHeight>\n  ...\n  ...\n</AutoHeight>'}</pre>
             <AutoHeight>
               <AutoHeight>.</AutoHeight>
               <AutoHeight>{extra}</AutoHeight>
@@ -125,9 +126,9 @@ storiesOf('AutoHeight')
       </pre>
     )
   })
-  .add('AutoHeightsOfChildren', () => {
-    const [parentCounter, setCounter] = useState(0)
-    const items = ['1st', '2nd', '3rd', '4th', '5th']
+  .add('Custom element and render props', () => {
+    const [itemCount, setCount] = useState(5)
+    const items = Array.from(Array(itemCount)).map((_, i) => i + 1)
 
     const createClickHandler = (updateHeight) => (event) => {
       event.stopPropagation()
@@ -139,7 +140,7 @@ storiesOf('AutoHeight')
     }
 
     const handleReRender = () => {
-      setCounter((prev) => prev + 1)
+      setCount(2 + Math.floor(Math.random() * 10))
     }
 
     return (
@@ -160,9 +161,9 @@ storiesOf('AutoHeight')
         <AutoHeight element="ul">
           {(updateHeight) => (
             <>
-              {items.map((item) => (
+              {items.map((i) => (
                 <li
-                  key={item}
+                  key={i}
                   onClick={createClickHandler(updateHeight)}
                   className="additional-css"
                   style={{
@@ -170,15 +171,15 @@ storiesOf('AutoHeight')
                     background: rndColor(),
                   }}
                 >
-                  {item}
+                  Item {i}
                 </li>
               ))}
             </>
           )}
         </AutoHeight>
         <i>
-          (click an item to change content, click here to re-render random colors of parent: #
-          {parentCounter})
+          (click an item to change content, click outside to re-render parent - colors and number of
+          items in the list)
         </i>
       </div>
     )
@@ -244,7 +245,8 @@ storiesOf('AutoHeight')
         <AutoHeight style={{background: 'yellowgreen'}}>
           {(updateHeight) => (
             <>
-              AutoHeight (without other solution): ✓ <textarea onKeyPress={updateHeight} />
+              AutoHeight render props (without other solution): ✓{' '}
+              <textarea onKeyPress={updateHeight} />
             </>
           )}
         </AutoHeight>
