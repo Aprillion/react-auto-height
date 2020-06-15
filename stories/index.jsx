@@ -7,17 +7,14 @@ import './index.css'
 
 const header = (
   <p>
-    This is a demo of{' '}
-    <a href="https://github.com/Aprillion/react-auto-height">
-      react-auto-height
-    </a>
+    This is a demo of <a href="https://github.com/Aprillion/react-auto-height">react-auto-height</a>
     .
   </p>
 )
 
 storiesOf('AutoHeight', module)
   .addDecorator(withInfo)
-  .addDecorator(Story => <Story />)
+  .addDecorator((Story) => <Story />)
   .addParameters({
     options: {
       showPanel: false,
@@ -47,14 +44,10 @@ storiesOf('AutoHeight', module)
     }
     const style = {
       background,
-      transition: '300ms; /* overwrite transition for height */',
+      transition: '300ms /* overwrite transition for height */',
     }
     return (
-      <AutoHeight
-        className="additional-css"
-        style={style}
-        onClick={handleClick}
-      >
+      <AutoHeight className="additional-css" style={style} onClick={handleClick}>
         click here multiple times to change content
         {content}
       </AutoHeight>
@@ -62,7 +55,7 @@ storiesOf('AutoHeight', module)
   })
   .add('Nested AutoHeights', () => {
     const [isShort, setIsShort] = useState(true)
-    const handleClick = () => setIsShort(prev => !prev)
+    const handleClick = () => setIsShort((prev) => !prev)
     const extra = isShort ? null : <div>{' ... extra\n ... extra'}</div>
     return (
       <div onClick={handleClick} className="nested">
@@ -108,13 +101,13 @@ storiesOf('AutoHeight', module)
           </AutoHeight>
         </div>
         <i>(click to change content)</i>
-        <p>Nested AutoHeights should work fine. Please test more carefully.</p>
+        <p>Nested AutoHeights should work fine, but please test your app more carefully.</p>
       </div>
     )
   })
   .add('Interference with margin collapse', () => {
     const [isShort, setIsShort] = useState(true)
-    const handleClick = () => setIsShort(prev => !prev)
+    const handleClick = () => setIsShort((prev) => !prev)
     const extra = isShort ? null : (
       <>
         <p> ... extra paragraph 1</p>
@@ -128,7 +121,7 @@ storiesOf('AutoHeight', module)
         <p>paragraph</p>
         <p>
           <AutoHeight>
-            <b>Good AutoHeight, inside an element with margin</b>
+            <b>AutoHeight works fine inside an element with margin</b>
             {extra}
           </AutoHeight>
         </p>
@@ -136,10 +129,7 @@ storiesOf('AutoHeight', module)
         <p>paragraph</p>
         <AutoHeight>
           <p>
-            <b>
-              Bad AutoHeight, containning a block element with margin,
-              preventing
-            </b>{' '}
+            <b>AutoHeight that contains an element with margin will prevent</b>{' '}
             <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Box_Model/Mastering_margin_collapsing">
               margin collapse
             </a>
@@ -153,18 +143,15 @@ storiesOf('AutoHeight', module)
     )
   })
   .add('Do NOT combine with other solutions', () => {
-    const handleAutoResize = ev => {
+    const handleAutoResize = (ev) => {
       ev.currentTarget.style.height = ev.currentTarget.scrollHeight - 2 + 'px'
     }
     return (
       <div>
-        Please do NOT combine AutoHeight with other auto-resizing solutions,
-        e.g. a dynamic textarea:
+        Please do NOT combine AutoHeight with other auto-resizing solutions, e.g. a dynamic
+        textarea:
         <br />
-        <textarea
-          onKeyDown={handleAutoResize}
-          placeholder="I will expand for longer text"
-        />
+        <textarea onKeyDown={handleAutoResize} placeholder="I will expand for longer text" />
         <AutoHeight>
           <textarea
             onKeyDown={handleAutoResize}
