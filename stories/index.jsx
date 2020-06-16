@@ -4,6 +4,25 @@ import {storiesOf} from '@storybook/react'
 import AutoHeight from '../src'
 import './index.css'
 
+const intro = (
+  <div className="intro">
+    <h2>AutoHeight examples</h2>
+    Demo of{' '}
+    <a href="https://www.npmjs.com/package/react-auto-height" target="_blank" rel="noopener">
+      <code>react-auto-height</code>
+    </a>
+    , full storybook source code available on{' '}
+    <a
+      href="https://github.com/Aprillion/react-auto-height/blob/master/stories/index.jsx"
+      target="_blank"
+      rel="noopener"
+    >
+      github
+    </a>
+    .
+  </div>
+)
+
 const rndColor = () =>
   `rgb(${Array.from(Array(3))
     .map(() => Math.floor(Math.random() * 100 + 155))
@@ -20,6 +39,7 @@ storiesOf('AutoHeight')
     }
     return (
       <div onClick={handleClick}>
+        {intro}
         <pre>{`
           import AutoHeight from 'react-auto-height'
           
@@ -39,8 +59,9 @@ storiesOf('AutoHeight')
     const handleClick = () => setIsShort((prev) => !prev)
     const extra = isShort ? null : <div>{' ... extra\n ... extra'}</div>
     return (
-      <div onClick={handleClick} className="nested">
-        <div>
+      <div onClick={handleClick}>
+        {intro}
+        <div className="nested">
           <div style={{background: 'salmon'}}>
             none:
             <pre>{'<div>\n  <div />\n  <div />\n</div>'}</pre>
@@ -91,6 +112,88 @@ storiesOf('AutoHeight')
       </div>
     )
   })
+  .add('Custom element', () => {
+    const [itemCount, setCount] = useState(5)
+    const [expanded, setExpanded] = useState({})
+    const [colors, setColors] = useState(Array.from(Array(itemCount)).map((_) => rndColor()))
+    const items = Array.from(Array(itemCount)).map((_, i) => i)
+
+    const createClickHandler = (id) => (event) => {
+      event.stopPropagation()
+      setExpanded((prev) => ({...prev, [id]: !prev[id]}))
+    }
+
+    const handleReRender = () => {
+      const nextCount = 2 + Math.floor(Math.random() * 10)
+      setCount(nextCount)
+      setColors(Array.from(Array(nextCount)).map((_) => rndColor()))
+    }
+
+    return (
+      <div onClick={handleReRender}>
+        {intro}
+        <pre>{`
+          <AutoHeight element="ul">
+            {items}
+          </AutoHeight>
+        `}</pre>
+        <AutoHeight element="ul">
+          {items.map((item) => (
+            <AutoHeight
+              element="li"
+              onClick={createClickHandler(item)}
+              style={{
+                background: colors[item],
+                overflow: 'visible',
+                transition: '200ms cubic-bezier(0, -0.5, 1, 1.5)',
+              }}
+              className="additional-css"
+              key={item}
+            >
+              item {item}
+              {expanded[item] ? '\n.'.repeat(1 + (itemCount % 5)) : ''}
+            </AutoHeight>
+          ))}
+        </AutoHeight>
+        <i>
+          (click an item to expand/collapse, click outside to re-render number of items in the list)
+        </i>
+      </div>
+    )
+  })
+  .add('Textarea (controlled via render props)', () => {
+    const handleAutoResize = (ev) => {
+      ev.currentTarget.style.height = ev.currentTarget.scrollHeight - 2 + 'px'
+    }
+    return (
+      <div>
+        {intro}
+        <pre>{`
+          <AutoHeight>
+            {(updateHeight) => (
+              <textarea onInput={updateHeight} />
+            )}
+          </AutoHeight>
+        `}</pre>
+        <AutoHeight style={{background: 'yellowgreen'}}>
+          {(updateHeight) => (
+            <>
+              AutoHeight render props: ✓ <textarea onInput={updateHeight} />
+            </>
+          )}
+        </AutoHeight>
+        <br />
+        Please do NOT combine AutoHeight with other auto-resizing solutions:
+        <AutoHeight style={{background: 'orange'}}>
+          AutoHeight + other solution will NOT work: ✗ <textarea onKeyPress={handleAutoResize} />
+        </AutoHeight>
+        <div style={{background: 'gold'}}>
+          Other solution only: ✓ <textarea onKeyPress={handleAutoResize} />
+        </div>
+        <i>(try typing long text into textareas)</i>
+      </div>
+    )
+  })
   .add('Parents of re-rendered children', () => {
     const Child = () => {
       const [isShot, setShort] = useState(true)
@@ -110,78 +213,22 @@ storiesOf('AutoHeight')
     }
 
     return (
-      <pre>
-        <AutoHeight>
-          {'<AutoHeight>'}
-          <Child />
-          {'  '}...
-          <Child />
-          {'</AutoHeight>'}
-        </AutoHeight>
-        <br />
+      <>
+        {intro}
+        <pre>
+          <AutoHeight>
+            {'<AutoHeight>'}
+            <Child />
+            {'  '}...
+            <Child />
+            {'</AutoHeight>'}
+          </AutoHeight>
+        </pre>
         <i>
           (click on individual children to re-render them and update parent height, without
           re-rendering the parent)
         </i>
-      </pre>
-    )
-  })
-  .add('Custom element and render props', () => {
-    const [itemCount, setCount] = useState(5)
-    const items = Array.from(Array(itemCount)).map((_, i) => i + 1)
-
-    const createClickHandler = (updateHeight) => (event) => {
-      event.stopPropagation()
-      const current = event.target.innerText
-      event.target.innerText = current.includes('.')
-        ? current.replace(/(\s\.)+/g, '')
-        : current + '\n.\n.'
-      updateHeight()
-    }
-
-    const handleReRender = () => {
-      setCount(2 + Math.floor(Math.random() * 10))
-    }
-
-    return (
-      <div onClick={handleReRender}>
-        <pre>{`
-          <AutoHeight element="ul">
-            {(updateHeight) => (
-              
-              {items.map((item) => (
-                <li onClick={createClickHandler(updateHeight)} className="some-transition" key={item}>
-                  {item}
-                </li>
-              ))}
-              
-            )}
-          </AutoHeight>
-        `}</pre>
-        <AutoHeight element="ul">
-          {(updateHeight) => (
-            <>
-              {items.map((i) => (
-                <li
-                  key={i}
-                  onClick={createClickHandler(updateHeight)}
-                  className="additional-css"
-                  style={{
-                    transition: '300ms cubic-bezier(0.5, -0.5, 0.5, 1.5) ',
-                    background: rndColor(),
-                  }}
-                >
-                  Item {i}
-                </li>
-              ))}
-            </>
-          )}
-        </AutoHeight>
-        <i>
-          (click an item to change content, click outside to re-render parent - colors and number of
-          items in the list)
-        </i>
-      </div>
+      </>
     )
   })
   .add('Interference with margin collapse', () => {
@@ -195,71 +242,38 @@ storiesOf('AutoHeight')
     )
 
     return (
-      <pre onClick={handleClick}>
-        <span>{'<p>...</p>'}</span>
-        <p>{'<p>...</p>'}</p>
-        <p>
-          <AutoHeight style={{background: 'yellowgreen'}}>
-            {'<p>\n  <AutoHeight>'} <b>works fine inside an element with margin</b> {extra}
-            {'  </AutoHeight>\n</p>'}
-          </AutoHeight>
-        </p>
-        <p>{'<p>...</p>'}</p>
-        <AutoHeight>
-          <p style={{background: 'gold'}}>
-            {'<AutoHeight>\n  <p>'}{' '}
-            <b>
-              if AutoHeight contains an element with margin, it will prevent{' '}
-              <a
-                href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Box_Model/Mastering_margin_collapsing"
-                target="_blank"
-                rel="noopener"
-              >
-                margin collapse
-              </a>
-            </b>
-            {extra}
-            {'  </p>\n</AutoHeight>'}
+      <>
+        {intro}
+        <pre onClick={handleClick}>
+          <span>{'<p>...</p>'}</span>
+          <p>{'<p>...</p>'}</p>
+          <p>
+            <AutoHeight style={{background: 'yellowgreen'}}>
+              {'<p>\n  <AutoHeight>'} <b>works fine inside an element with margin</b> {extra}
+              {'  </AutoHeight>\n</p>'}
+            </AutoHeight>
           </p>
-        </AutoHeight>
-        <p>{'<p>...</p>'}</p>
-        <i>(click to change content)</i>
-      </pre>
-    )
-  })
-  .add('Do NOT combine with other solutions', () => {
-    const handleAutoResize = (ev) => {
-      ev.currentTarget.style.height = ev.currentTarget.scrollHeight - 2 + 'px'
-    }
-    return (
-      <div>
-        Please do NOT combine AutoHeight with other auto-resizing solutions, e.g. a dynamic
-        textarea:
-        <br />
-        <AutoHeight style={{background: 'orange'}}>
-          AutoHeight + other solution will NOT work: ✗ <textarea onKeyPress={handleAutoResize} />
-        </AutoHeight>
-        <div style={{background: 'gold'}}>
-          Other solution only: ✓ <textarea onKeyPress={handleAutoResize} />
-        </div>
-        <AutoHeight style={{background: 'yellowgreen'}}>
-          {(updateHeight) => (
-            <>
-              AutoHeight render props (without other solution): ✓{' '}
-              <textarea onKeyPress={updateHeight} />
-            </>
-          )}
-        </AutoHeight>
-        <pre>{`
+          <p>{'<p>...</p>'}</p>
           <AutoHeight>
-            {(updateHeight) => (
-            
-              <textarea onKeyPress={updateHeight} />
-              
-            )}
+            <p style={{background: 'gold'}}>
+              {'<AutoHeight>\n  <p>'}{' '}
+              <b>
+                if AutoHeight contains an element with margin, it will prevent{' '}
+                <a
+                  href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Box_Model/Mastering_margin_collapsing"
+                  target="_blank"
+                  rel="noopener"
+                >
+                  margin collapse
+                </a>
+              </b>
+              {extra}
+              {'  </p>\n</AutoHeight>'}
+            </p>
           </AutoHeight>
-        `}</pre>
-        <i>(try typing long text into textareas)</i>
-      </div>
+          <p>{'<p>...</p>'}</p>
+          <i>(click to change content)</i>
+        </pre>
+      </>
     )
   })
