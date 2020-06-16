@@ -31,17 +31,17 @@ return (
 
 See the Storybook in https://aprillion.github.io/react-auto-height for more examples.
 
-<img src="./react-auto-height-in-action.webm" alt="animated preview">
+![animated preview](./react-auto-height-in-action.gif)
 
 ### Development
 
 ```bash
-npm i
-npm audit fix
-npm start
+yarn
+yarn audit fix
+yarn start
 # make changes and manually test dynamic interactions in storybook
 # update version in package.json
-npm run build
+yarn build
 git
 npm publish
 ```
