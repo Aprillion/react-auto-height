@@ -1,54 +1,83 @@
-import React, {memo, useEffect, useRef} from 'react'
-import PropTypes from 'prop-types'
+import React, {useEffect, useRef} from 'react'
 import './index.css'
 
-const PREV_HEIGHT = 'data-react-auto-height-start-value'
-const AutoHeight = ({children, className, ...props}) => {
+const myClassName = 'react-auto-height'
+const myAdjustHeight = 'data-react-auto-height-adjust-height'
+
+const needsUpdate = new Set()
+const updateParents = () => {
+  setTimeout(() => {
+    for (const el of needsUpdate) {
+      setNewHeight(el)
+    }
+  }, 0)
+}
+
+const setNewHeight = (el) => {
+  const origDelay = getComputedStyle(el).getPropertyValue('transition-delay')
+  const origDuration = getComputedStyle(el).getPropertyValue('transition-duration')
+  const origHeight = el.style.height || getComputedStyle(el).getPropertyValue('height')
+
+  el.style.transitionDelay = '0'
+  el.style.transitionDuration = '0'
+  el.style.height = 'auto'
+
+  const adjustHeight = parseInt(el.getAttribute(myAdjustHeight)) || 0
+  const newHeight = el.scrollHeight + adjustHeight + 'px'
+  el.style.height = origHeight
+
+  el.scrollHeight // force reflow before re-enabling transitions
+
+  el.style.transitionDelay = origDelay
+  el.style.transitionDuration = origDuration
+  el.style.height = newHeight
+
+  el.setAttribute(myAdjustHeight, 0)
+  needsUpdate.delete(el)
+
+  if (origHeight != newHeight) {
+    const myAdjust = parseInt(newHeight) - parseInt(origHeight)
+    let parent = el.parentElement
+    while (parent) {
+      if (parent.className.includes(myClassName)) {
+        const existingAdjust = parseInt(parent.getAttribute(myAdjustHeight)) || 0
+        parent.setAttribute(myAdjustHeight, existingAdjust + myAdjust)
+        needsUpdate.add(parent)
+        parent = null
+      } else {
+        parent = parent.parentElement
+      }
+    }
+  }
+}
+
+const AutoHeight = ({children, element = 'div', className: propClassName = '', ...props}) => {
+  const Element = element
   const ref = useRef()
 
-  useEffect(() => {
+  const updateHeight = () => {
     const {current: el} = ref
     if (!el) {
       return
     }
-
-    // find descendants created by nested AutoHeights and adjust future height of current element by the future heights of children
-    // skip for first render
-    let adjustBy = 0
-    if (el.style.height) {
-      el.setAttribute(PREV_HEIGHT, el.style.height)
-      let descendants = Array.from(el.firstChild.children)
-      for (let child of descendants) {
-        let prevHeight = child.getAttribute(PREV_HEIGHT)
-        if (prevHeight) {
-          child = child.firstChild // skip the outer wrapper
-          adjustBy += child.scrollHeight - parseInt(prevHeight)
-        }
-        if (child.children && child.children.length) {
-          Array.from(child.children).forEach((grandChild) => {
-            if (grandChild.getAttribute) {
-              descendants.push(grandChild)
-            }
-          })
-        }
+    if (typeof children === 'function') {
+      for (const child of el.children) {
+        child.getAttribute && setNewHeight(child)
       }
     }
+    setNewHeight(el)
+    updateParents()
+  }
 
-    el.style.height = el.firstChild.scrollHeight + adjustBy + 'px'
+  useEffect(() => {
+    updateHeight()
   })
 
-  // inner div used in el.firstChild
   return (
-    <div ref={ref} className={`react-auto-height ${className}`} {...props}>
-      <div>{children}</div>
-    </div>
+    <Element ref={ref} className={`${myClassName} ${propClassName}`} {...props}>
+      {typeof children === 'function' ? children(updateHeight) : children}
+    </Element>
   )
 }
-
-export default memo(AutoHeight)
-
-AutoHeight.propTypes = {
-  children: PropTypes.node,
-  /** Props are propagated to the outer wrapper div - including style, className, data-test-id, ... */
-  '...props': PropTypes.string,
-}
+AutoHeight.displayName = 'AutoHeigh'
+export default AutoHeight

@@ -1,7 +1,7 @@
 {
   "name": "react-auto-height",
-  "version": "1.0.5",
-  "description": "Automagical transition of `height: auto` elements when their content is changed.",
+  "version": "1.1.0",
+  "description": "Animated height support for `height: auto` elements (customizable `transition: height ...`)",
   "main": "build/index.js",
   "scripts": {
     "test": "webpack --watch  # Tested in external project using npm link",
@@ -22,20 +22,17 @@
     "@babel/core": "7.10.2",
     "@babel/preset-env": "7.10.2",
     "@babel/preset-react": "7.10.1",
-    "@storybook/addon-info": "5.3.19",
     "@storybook/react": "5.3.19",
     "babel-loader": "8.1.0",
-    "css-loader": "^3.5.3",
+    "css-loader": "^3.6.0",
     "isomorphic-style-loader": "^5.1.0",
     "prettier": "2.0.5",
-    "prop-types": "^15.7.2",
     "react": "16.13.1",
     "react-dom": "16.13.1",
     "webpack": "4.43.0",
     "webpack-cli": "3.3.11"
   },
   "peerDependencies": {
-    "prop-types": "^15.0.0",
     "react": "^16.8.0"
   }
 }

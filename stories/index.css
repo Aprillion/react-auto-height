@@ -1,14 +1,38 @@
+body {
+  font: 16px 'Nunito Sans', -apple-system, '.SFNSText-Regular', 'San Francisco', BlinkMacSystemFont,
+    'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.intro {
+  margin-bottom: 30px;
+}
+
+pre {
+  background: #eee;
+  margin: 5px 0;
+  padding: 10px 0;
+}
+
+p {
+  margin: 20px 0;
+}
+
+li {
+  padding: 1px 5px;
+}
+
 .additional-css,
 .nested {
   white-space: pre;
   cursor: pointer;
 }
 
-.nested > div {
+.nested {
   display: flex;
   align-items: flex-start;
 }
 
-.nested > div > div {
+.nested > div {
   min-width: 130px;
+  margin-right: 5px;
 }
