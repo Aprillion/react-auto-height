@@ -1,10 +1,9 @@
 {
   "name": "react-auto-height",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Animated height support for `height: auto` elements (customizable `transition: height ...`)",
   "main": "build/index.js",
   "scripts": {
-    "test": "webpack --watch  # Tested in external project using npm link",
     "start": "start-storybook -s src/assets",
     "build": "webpack && build-storybook -c .storybook -o docs -s src/assets"
   },
@@ -19,20 +18,20 @@
   },
   "homepage": "https://github.com/Aprillion/react-auto-height#readme",
   "devDependencies": {
-    "@babel/core": "7.10.2",
-    "@babel/preset-env": "7.10.2",
-    "@babel/preset-react": "7.10.1",
-    "@storybook/react": "5.3.19",
-    "babel-loader": "8.1.0",
-    "css-loader": "^3.6.0",
+    "@babel/core": "^7.13.10",
+    "@babel/preset-env": "^7.13.10",
+    "@babel/preset-react": "^7.12.13",
+    "@storybook/react": "^6.1.21",
+    "babel-loader": "^8.2.2",
+    "css-loader": "^5.1.2",
     "isomorphic-style-loader": "^5.1.0",
-    "prettier": "2.0.5",
-    "react": "16.13.1",
-    "react-dom": "16.13.1",
-    "webpack": "4.43.0",
-    "webpack-cli": "3.3.11"
+    "prettier": "^2.2.1",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
+    "webpack": "^5.25.0",
+    "webpack-cli": "^4.5.0"
   },
   "peerDependencies": {
-    "react": "^16.8.0"
+    "react": "^16.8.0 || ^17.0.0"
   }
 }
