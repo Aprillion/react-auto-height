@@ -1,6 +1,6 @@
 {
   "name": "react-auto-height",
-  "version": "1.1.5",
+  "version": "1.1.6",
   "description": "Animated height support for `height: auto` elements (customizable `transition: height ...`)",
   "main": "build/index.js",
   "types": "src/index.d.ts",
