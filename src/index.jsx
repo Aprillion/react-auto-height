@@ -96,15 +96,6 @@ function updateParents() {
   }, 0)
 }
 
-/**
- * @param {{
- *   children: JSX.Element | (updateHeight: () => void) => JSX.Element
- *   element: keyof React.ReactHTML | React.ComponentType
- *   className: string
- *   [prop: string]: React.ComponentProps<"div">
- * }} props
- * @returns JSX.Element
- */
 function AutoHeight({children, element = 'div', className: propClassName = '', ...props}) {
   const Element = element
   const ref = useRef()

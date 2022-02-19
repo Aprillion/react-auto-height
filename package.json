@@ -1,10 +1,12 @@
 {
   "name": "react-auto-height",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "description": "Animated height support for `height: auto` elements (customizable `transition: height ...`)",
   "main": "build/index.js",
+  "types": "src/index.d.ts",
   "scripts": {
     "start": "start-storybook -s src/assets",
+    "webpack": "webpack",
     "build": "webpack && build-storybook -c .storybook -o docs -s src/assets"
   },
   "repository": {
