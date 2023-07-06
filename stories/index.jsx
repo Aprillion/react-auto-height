@@ -277,3 +277,36 @@ storiesOf('AutoHeight')
       </>
     )
   })
+  .add('window resize and <details> element toggle', () => {
+    const [isShort, setIsShort] = useState(true)
+    const handleClick = () => setIsShort((prev) => !prev)
+    const extra = isShort ? null : (
+      <>
+        <p> ... extra paragraph 1</p>
+        <p> ... extra paragraph 2</p>
+      </>
+    )
+
+    return (
+      <>
+        {intro}
+        <pre style={{whiteSpace: 'pre-wrap'}}>
+          <AutoHeight>
+            {'<AutoHeight>\n'}
+            {'  '}Here is some content that can wrap to multiple lines, so that resizing window
+            width might change the height of the parent element...
+            {'\n  <details>'}
+            <details>
+              <summary style={{background: 'yellowgreen', cursor: 'pointer'}}>
+                {'  <summary>Click here to expand the HTML details element</summary>'}
+              </summary>
+              {'    '}This is the contents of the details element. It might also wrap to multiple
+              lines if the window is narrow enough.
+            </details>
+            {'  </details>\n'}
+            {'</AutoHeight>'}
+          </AutoHeight>
+        </pre>
+      </>
+    )
+  })
