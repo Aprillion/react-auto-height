@@ -1,4 +1,4 @@
-import React, {useEffect, useRef} from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 import './index.css'
 
 const myClassName = 'react-auto-height'
@@ -114,6 +114,27 @@ function AutoHeight({children, element = 'div', className: propClassName = '', .
   }
 
   useEffect(updateHeight)
+
+  // recalculate height on <details> toggle and window resize by forcing rerender
+  const [_, setStateToRerender] = useState()
+  useEffect(() => {
+    let isMounted = true
+    const forceRerender = (e) => {
+      setTimeout(() => {
+        if (isMounted) setStateToRerender({})
+      })
+    }
+    addEventListener('toggle', forceRerender, true)
+    addEventListener('resize', forceRerender, true)
+    addEventListener('orientationchange', forceRerender, true)
+
+    return () => {
+      isMounted = false
+      removeEventListener('toggle', forceRerender)
+      removeEventListener('resize', forceRerender)
+      removeEventListener('orientationchange', forceRerender)
+    }
+  }, [])
 
   return (
     <Element ref={ref} className={`${myClassName} ${propClassName}`} {...props}>
