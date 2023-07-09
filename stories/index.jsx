@@ -310,3 +310,33 @@ storiesOf('AutoHeight')
       </>
     )
   })
+  .add('image without specified height', () => {
+    const [isShort, setIsShort] = useState(true)
+    const handleClick = () => setIsShort((prev) => !prev)
+    const extra = isShort ? null : (
+      <>
+        <p> ... extra paragraph 1</p>
+        <p> ... extra paragraph 2</p>
+      </>
+    )
+
+    return (
+      <>
+        {intro}
+        <pre style={{whiteSpace: 'pre-wrap'}}>
+          <AutoHeight>
+            {
+              '<img src="https://raw.githubusercontent.com/Aprillion/react-auto-height/master/react-auto-height-in-action.gif" alt="example image" loading="lazy" />\n'
+            }
+            <img
+              src="https://raw.githubusercontent.com/Aprillion/react-auto-height/master/react-auto-height-in-action.gif"
+              alt="example image"
+              loading="lazy"
+            />
+            <br />
+            Here is some content after the image.
+          </AutoHeight>
+        </pre>
+      </>
+    )
+  })

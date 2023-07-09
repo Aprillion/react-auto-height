@@ -115,7 +115,6 @@ function AutoHeight({children, element = 'div', className: propClassName = '', .
 
   useEffect(updateHeight)
 
-  // recalculate height on <details> toggle and window resize by forcing rerender
   const [_, setStateToRerender] = useState()
   useEffect(() => {
     let isMounted = true
@@ -124,15 +123,20 @@ function AutoHeight({children, element = 'div', className: propClassName = '', .
         if (isMounted) setStateToRerender({})
       })
     }
-    addEventListener('toggle', forceRerender, true)
+    // recalculate height after <details> element toggle event
+    document.addEventListener('toggle', forceRerender, true)
+    // after <img> or <iframe> load
+    document.addEventListener('load', forceRerender, true)
+    // after window resize or mobile phone rotation
     addEventListener('resize', forceRerender, true)
     addEventListener('orientationchange', forceRerender, true)
 
     return () => {
       isMounted = false
-      removeEventListener('toggle', forceRerender)
-      removeEventListener('resize', forceRerender)
-      removeEventListener('orientationchange', forceRerender)
+      document.removeEventListener('toggle', forceRerender, true)
+      document.removeEventListener('load', forceRerender, true)
+      removeEventListener('resize', forceRerender, true)
+      removeEventListener('orientationchange', forceRerender, true)
     }
   }, [])
 
